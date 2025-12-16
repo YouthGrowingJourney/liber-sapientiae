@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visuelles Lexikon</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #161a22;
+      --panel-light: #1f2430;
+      --accent: #e0c280;
+      --text: #e6e6e6;
+      --muted: #9aa0aa;
+      --border: #2a2f3a;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #0c0f14, #0f1115 40%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+    }
+
+    header {
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -1px;
+    }
+
+    header p {
+      color: var(--muted);
+      max-width: 720px;
+      margin: 12px auto 0;
+      font-size: 1.05rem;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 20px;
+    }
+
+    .alphabet {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .letter {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+
+    .letter:hover {
+      border-color: var(--accent);
+    }
+
+    .letter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 26px;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--panel), var(--panel-light));
+    }
+
+    .letter-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .arrow {
+      font-size: 1.4rem;
+      transition: transform 0.35s ease;
+    }
+
+    .letter.open .arrow {
+      transform: rotate(90deg);
+    }
+
+    .letter-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.6s ease;
+    }
+
+    .letter.open .letter-content {
+      max-height: 2000px;
+    }
+
+    .term {
+      border-top: 1px solid var(--border);
+    }
+
+    .term-header {
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .term-header strong {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .term-header span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .term-body {
+      padding: 0 30px 18px 30px;
+      color: #d0d3da;
+      line-height: 1.7;
+      font-size: 0.95rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+
+    .term.open .term-body {
+      max-height: 800px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 700px) {
+      header h1 { font-size: 2.2rem; }
+      .letter-header h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Interaktives Lexikon</h1>
+    <p>Alphabetisch aufgebautes Wissensarchiv mit einklappbaren Buchstaben und Begriffen. Voll erweiterbar, modular und visuell hochwertig.</p>
+  </header>
+
+  <main>
+    <!-- SUCHFELD -->
+    <div style="margin: 0 0 32px 0;">
+      <input id="searchInput" type="text" placeholder="Begriff suchen…" style="width:100%;padding:16px 18px;border-radius:14px;border:1px solid var(--border);background:var(--panel-light);color:var(--text);font-size:1rem;outline:none;" />
+    </div>
+
+    <section class="alphabet">
+
+      <!-- BUCHSTABEN A–Z -->
+      <!-- Jeder Buchstabe ist identisch aufgebaut und beliebig erweiterbar -->
+
+      ${Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(l => `
+      <div class="letter" data-letter="${l}">
+        <div class="letter-header">
+          <h2>${l}</h2>
+          <div class="arrow">▶</div>
+        </div>
+        <div class="letter-content">
+
+          <div class="term" data-term="${l} Begriff 1">
+            <div class="term-header">
+              <strong>${l} Begriff 1</strong>
+              <span>öffnen</span>
+            </div>
+            <div class="term-body">
+              Ausführlicher Platzhaltertext für ${l} Begriff 1. Hier ist unbegrenzt Platz für Definitionen, Beispiele, Erklärungen und Vertiefungen.
+            </div>
+          </div>
+
+          <div class="term" data-term="${l} Begriff 2">
+            <div class="term-header">
+              <strong>${l} Begriff 2</strong>
+              <span>öffnen</span>
+            </div>
+            <div class="term-body">
+              Ausführlicher Platzhaltertext für ${l} Begriff 2. Vollständig einklappbar und suchbar.
+            </div>
+          </div>
+
+        </div>
+      </div>`).join('')}
+
+    </section>
+  </main>
+
+  <footer>
+    © Dein Lexikon – Skalierbar, erweiterbar, professionell
+  </footer>
+
+  <script>
+    // Buchstaben auf/zu
+    document.querySelectorAll('.letter-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.parentElement.classList.toggle('open');
+      });
+    });
+
+    // Begriffe auf/zu
+    document.querySelectorAll('.term-header').forEach(termHeader => {
+      termHeader.addEventListener('click', (e) => {
+        e.stopPropagation();
+        termHeader.parentElement.classList.toggle('open');
+      });
+    });
+
+    // SUCHFUNKTION (Live-Filter)
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+
+      document.querySelectorAll('.letter').forEach(letter => {
+        let letterHasMatch = false;
+
+        letter.querySelectorAll('.term').forEach(term => {
+          const termName = term.dataset.term.toLowerCase();
+          const match = termName.includes(query);
+          term.style.display = match ? 'block' : 'none';
+          if (match) letterHasMatch = true;
+        });
+
+        letter.style.display = letterHasMatch || query === '' ? 'block' : 'none';
+        if (letterHasMatch && query !== '') letter.classList.add('open');
+        if (query === '') letter.classList.remove('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
