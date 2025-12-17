@@ -1,256 +1,371 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visuelles Lexikon</title>
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lexikon — A–Z (Demo)</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-
   <style>
-    :root {
-      --bg: #0f1115;
-      --panel: #161a22;
-      --panel-light: #1f2430;
-      --accent: #e0c280;
-      --text: #e6e6e6;
-      --muted: #9aa0aa;
-      --border: #2a2f3a;
-      --radius: 16px;
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#9aa4b2;
+      --accent:#e0c280;
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --radius:16px;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:radial-gradient(1200px 600px at 10% 10%, rgba(224,194,128,0.06), transparent),
+                 linear-gradient(180deg, #071021 0%, #071a28 60%),
+                 var(--bg);
+         color:#e6eef6;padding:28px}
+
+    .app{
+      max-width:1300px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:start
     }
 
-    * { box-sizing: border-box; }
+    header.app-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#caa76b);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07202b;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .title{font-weight:800;font-size:18px}
+    .subtitle{font-size:13px;color:var(--muted)}
 
-    body {
-      margin: 0;
-      background: linear-gradient(180deg, #0c0f14, #0f1115 40%);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-    }
+    .controls{display:flex;gap:10px;align-items:center}
+    .search{display:flex;align-items:center;gap:8px;background:var(--glass);padding:8px;border-radius:12px;box-shadow:inset 0 -1px 0 rgba(255,255,255,0.02)}
+    .search input{background:transparent;border:0;outline:0;color:inherit;font-size:15px;width:360px}
+    .btn{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;color:var(--muted);font-weight:600}
+    .btn.primary{background:linear-gradient(180deg,var(--accent),#caa76b);color:#07202b;border:0}
 
-    header {
-      padding: 40px 24px;
-      text-align: center;
-    }
+    /* Sidebar alphabet */
+    .sidebar{position:sticky;top:28px;padding:14px;background:linear-gradient(180deg,var(--glass),transparent);border-radius:var(--radius);min-height:420px}
+    .alpha{display:flex;flex-direction:column;gap:6px}
+    .alpha button{background:transparent;border:0;padding:8px;border-radius:8px;color:var(--muted);cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px}
+    .alpha button:hover{color:#fff}
+    .alpha .letter{width:36px;height:36px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+    .alpha .active{color:var(--accent)}
 
-    header h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      margin: 0;
-      letter-spacing: -1px;
-    }
+    /* Main lexicon area */
+    .content{padding:18px;background:linear-gradient(180deg,var(--glass-2),transparent);border-radius:var(--radius);min-height:600px}
+    .letter-card{margin-bottom:18px;border-radius:12px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .letter-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .letter-head .title{font-size:20px}
+    .letter-actions{display:flex;gap:8px}
+    .toggle-arrow{width:36px;height:36px;border-radius:9px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);display:flex;align-items:center;justify-content:center;cursor:pointer}
 
-    header p {
-      color: var(--muted);
-      max-width: 720px;
-      margin: 12px auto 0;
-      font-size: 1.05rem;
-    }
+    .categories{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+    .category{background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(255,255,255,0.01));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .category .cat-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .term{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-top:8px;border:1px solid rgba(0,0,0,0.2);cursor:pointer}
+    .term .term-label{display:flex;align-items:center;gap:10px}
+    .term .term-label .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:0 0 10px}
+    .explanation{margin-top:8px;padding:10px;border-radius:8px;background:rgba(0,0,0,0.18);display:none;color:var(--muted);font-size:14px}
 
-    main {
-      max-width: 1100px;
-      margin: 0 auto 80px;
-      padding: 0 20px;
-    }
+    mark{background:linear-gradient(90deg, rgba(224,194,128,0.18), rgba(224,194,128,0.06));color:var(--accent);padding:2px 3px;border-radius:4px}
 
-    .alphabet {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+    .no-results{padding:40px;text-align:center;color:var(--muted)}
 
-    .letter {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: border-color 0.3s ease;
-    }
+    /* small screens */
+    @media (max-width:900px){.app{grid-template-columns:1fr;}.sidebar{order:2}.content{order:1}}
 
-    .letter:hover {
-      border-color: var(--accent);
-    }
-
-    .letter-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 22px 26px;
-      cursor: pointer;
-      background: linear-gradient(90deg, var(--panel), var(--panel-light));
-    }
-
-    .letter-header h2 {
-      margin: 0;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .arrow {
-      font-size: 1.4rem;
-      transition: transform 0.35s ease;
-    }
-
-    .letter.open .arrow {
-      transform: rotate(90deg);
-    }
-
-    .letter-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.6s ease;
-    }
-
-    .letter.open .letter-content {
-      max-height: 2000px;
-    }
-
-    .term {
-      border-top: 1px solid var(--border);
-    }
-
-    .term-header {
-      padding: 18px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .term-header strong {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    .term-header span {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .term-body {
-      padding: 0 30px 18px 30px;
-      color: #d0d3da;
-      line-height: 1.7;
-      font-size: 0.95rem;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s ease;
-    }
-
-    .term.open .term-body {
-      max-height: 800px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 700px) {
-      header h1 { font-size: 2.2rem; }
-      .letter-header h2 { font-size: 1.4rem; }
-    }
+    /* subtle transitions */
+    .term,.category,.letter-card{transition:transform .25s,box-shadow .25s}
+    .term:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
   </style>
 </head>
 <body>
-
-  <header>
-    <h1>Interaktives Lexikon</h1>
-    <p>Alphabetisch aufgebautes Wissensarchiv mit einklappbaren Buchstaben und Begriffen. Voll erweiterbar, modular und visuell hochwertig.</p>
-  </header>
-
-  <main>
-    <!-- SUCHFELD -->
-    <div style="margin: 0 0 32px 0;">
-      <input id="searchInput" type="text" placeholder="Begriff suchen…" style="width:100%;padding:16px 18px;border-radius:14px;border:1px solid var(--border);background:var(--panel-light);color:var(--text);font-size:1rem;outline:none;" />
-    </div>
-
-    <section class="alphabet">
-
-      <!-- BUCHSTABEN A–Z -->
-      <!-- Jeder Buchstabe ist identisch aufgebaut und beliebig erweiterbar -->
-
-      ${Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(l => `
-      <div class="letter" data-letter="${l}">
-        <div class="letter-header">
-          <h2>${l}</h2>
-          <div class="arrow">▶</div>
+  <div class="app" id="app">
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo">LZ</div>
+        <div>
+          <div class="title">Lexikon — A–Z</div>
+          <div class="subtitle">Extrem visuell. Voll funktionsfähig. Platzhalter gefüllt.</div>
         </div>
-        <div class="letter-content">
+      </div>
 
-          <div class="term" data-term="${l} Begriff 1">
-            <div class="term-header">
-              <strong>${l} Begriff 1</strong>
-              <span>öffnen</span>
-            </div>
-            <div class="term-body">
-              Ausführlicher Platzhaltertext für ${l} Begriff 1. Hier ist unbegrenzt Platz für Definitionen, Beispiele, Erklärungen und Vertiefungen.
-            </div>
-          </div>
-
-          <div class="term" data-term="${l} Begriff 2">
-            <div class="term-header">
-              <strong>${l} Begriff 2</strong>
-              <span>öffnen</span>
-            </div>
-            <div class="term-body">
-              Ausführlicher Platzhaltertext für ${l} Begriff 2. Vollständig einklappbar und suchbar.
-            </div>
-          </div>
-
+      <div class="controls">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/></svg>
+          <input id="searchInput" type="search" placeholder="Suche Begriffe, Erklärungen, Kategorien..." aria-label="Suche" />
+          <button class="btn" id="clearSearch" title="Suche löschen">✕</button>
         </div>
-      </div>`).join('')}
+        <button class="btn" id="expandAll">Alle öffnen</button>
+        <button class="btn" id="collapseAll">Alle schließen</button>
+        <button class="btn primary" id="exportBtn">Export (JSON)</button>
+      </div>
+    </header>
 
-    </section>
-  </main>
+    <aside class="sidebar" aria-label="Alphabet">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Alphabet</strong>
+        <small style="color:var(--muted)">A–Z</small>
+      </div>
+      <div class="alpha" id="alphabet"></div>
+    </aside>
 
-  <footer>
-    © Dein Lexikon – Skalierbar, erweiterbar, professionell
-  </footer>
+    <main class="content" id="content" tabindex="0">
+      <div id="lettersContainer"></div>
+      <div id="noResults" class="no-results" style="display:none">Keine Ergebnisse. Versuch ein anderes Stichwort.</div>
+    </main>
+  </div>
 
   <script>
-    // Buchstaben auf/zu
-    document.querySelectorAll('.letter-header').forEach(header => {
-      header.addEventListener('click', () => {
-        header.parentElement.classList.toggle('open');
-      });
-    });
+    // ====== Konfiguration ======
+    const LETTERS = Array.from(Array(26)).map((_,i)=>String.fromCharCode(65+i)); // A..Z
+    const CATS_PER_LETTER = 4; // Anzahl der Überkategorien pro Buchstabe
+    const TERMS_PER_CAT = 8; // Anzahl Begriffe pro Kategorie
 
-    // Begriffe auf/zu
-    document.querySelectorAll('.term-header').forEach(termHeader => {
-      termHeader.addEventListener('click', (e) => {
-        e.stopPropagation();
-        termHeader.parentElement.classList.toggle('open');
-      });
-    });
+    // localStorage keys
+    const LS_EXPANDED = 'lexikon_expanded_letters_v1';
 
-    // SUCHFUNKTION (Live-Filter)
+    // ====== Daten-Generator (Platzhalter) ======
+    function generateData(){
+      const data = {};
+      for(const L of LETTERS){
+        const cats = [];
+        for(let c=1;c<=CATS_PER_LETTER;c++){
+          const catName = `Kategorie ${c}`;
+          const terms = [];
+          for(let t=1;t<=TERMS_PER_CAT;t++){
+            const name = `${L}${String.fromCharCode(96+c)}-Begriff ${t}`; // e.g. A a-Begriff 1
+            const explanation = `Erklärung für ${name}. Hier steht eine ausführliche Beschreibung, Beispiele, mögliche Anwendungsfälle und Querverweise. Platzhaltertext — ersetze ihn durch echten Inhalt.`;
+            terms.push({id: `${L}-${c}-${t}`, name, explanation});
+          }
+          cats.push({name:catName,terms});
+        }
+        data[L]={letter:L,categories:cats};
+      }
+      return data;
+    }
+
+    const DATA = generateData();
+
+    // ====== State verwalten ======
+    function loadExpanded(){
+      try{const raw=localStorage.getItem(LS_EXPANDED);return raw?JSON.parse(raw):{}}catch(e){return{}}}
+    function saveExpanded(obj){localStorage.setItem(LS_EXPANDED,JSON.stringify(obj))}
+
+    let expanded = loadExpanded(); // { A:true, B:false }
+
+    // ====== DOM generieren ======
+    const alphabetEl = document.getElementById('alphabet');
+    const lettersContainer = document.getElementById('lettersContainer');
     const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    const noResults = document.getElementById('noResults');
 
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.toLowerCase();
+    function createAlphabet(){
+      LETTERS.forEach(L=>{
+        const btn = document.createElement('button');
+        btn.className = 'alpha-btn';
+        btn.innerHTML = `<div class="letter">${L}</div><div style="flex:1;margin-left:6px;color:var(--muted);font-size:13px">${DATA[L].categories.length} Kategorien</div>`;
+        btn.addEventListener('click',()=>{
+          const card = document.getElementById('letter-'+L);
+          if(card){card.scrollIntoView({behavior:'smooth',block:'start'});
+          // open it
+          toggleLetter(L,true);
+          }
+        });
+        alphabetEl.appendChild(btn);
+      });
+    }
 
-      document.querySelectorAll('.letter').forEach(letter => {
-        let letterHasMatch = false;
+    function buildUI(){
+      lettersContainer.innerHTML='';
+      for(const L of LETTERS){
+        const info = DATA[L];
+        const card = document.createElement('section');
+        card.className='letter-card';
+        card.id = 'letter-'+L;
+        card.setAttribute('data-letter',L);
 
-        letter.querySelectorAll('.term').forEach(term => {
-          const termName = term.dataset.term.toLowerCase();
-          const match = termName.includes(query);
-          term.style.display = match ? 'block' : 'none';
-          if (match) letterHasMatch = true;
+        const head = document.createElement('div');head.className='letter-head';
+        head.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#caa76b);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07202b">${L}</div><div><div class="title">${L} — Begriffe</div><div style="color:var(--muted);font-size:13px">${info.categories.length} Kategorien · ${info.categories.reduce((s,c)=>s+c.terms.length,0)} Begriffe</div></div></div>`;
+
+        const actions = document.createElement('div');actions.className='letter-actions';
+        const arrow = document.createElement('div');arrow.className='toggle-arrow';arrow.title='Auf/Zu';arrow.innerHTML='▾';
+        arrow.addEventListener('click',()=>{toggleLetter(L);});
+        const expandAllCat = document.createElement('button');expandAllCat.className='btn';expandAllCat.textContent='Kategorien öffnen';expandAllCat.addEventListener('click',()=>{openAllCategories(L,true)});
+        const collapseAllCat = document.createElement('button');collapseAllCat.className='btn';collapseAllCat.textContent='Kategorien schließen';collapseAllCat.addEventListener('click',()=>{openAllCategories(L,false)});
+        actions.appendChild(expandAllCat);actions.appendChild(collapseAllCat);actions.appendChild(arrow);
+        head.appendChild(actions);
+
+        card.appendChild(head);
+
+        const categoriesWrap = document.createElement('div');categoriesWrap.className='categories';
+        info.categories.forEach((cat,ci)=>{
+          const c = document.createElement('div');c.className='category';c.setAttribute('data-cat',cat.name);
+          const catHead = document.createElement('div');catHead.className='cat-head';catHead.innerHTML = `<strong>${cat.name}</strong><small style="color:var(--muted)">${cat.terms.length} Begriffe</small>`;
+          const catList = document.createElement('div');catList.className='cat-list';
+
+          cat.terms.forEach(term=>{
+            const t = document.createElement('div');t.className='term';t.setAttribute('data-term',term.name);t.setAttribute('tabindex','0');
+            t.innerHTML = `<div class="term-label"><div class="dot"></div><div><strong>${term.name}</strong><div style="color:var(--muted);font-size:13px;margin-top:4px">Kurze Referenz / Stichwörter</div></div></div>`;
+            const expl = document.createElement('div');expl.className='explanation';expl.innerText = term.explanation;
+            t.appendChild(expl);
+
+            // toggle explanation
+            t.addEventListener('click', (e)=>{
+              // if clicked on a link/btn inside, ignore (future-proof)
+              if(e.target.closest('.explanation')) return;
+              const isOpen = expl.style.display === 'block';
+              expl.style.display = isOpen ? 'none' : 'block';
+              // smooth scroll into view if opening
+              if(!isOpen) t.scrollIntoView({behavior:'smooth',block:'center'});
+            });
+            // keyboard
+            t.addEventListener('keydown',(ev)=>{ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); t.click(); }});
+
+            catList.appendChild(t);
+          });
+
+          c.appendChild(catHead);c.appendChild(catList);
+          categoriesWrap.appendChild(c);
         });
 
-        letter.style.display = letterHasMatch || query === '' ? 'block' : 'none';
-        if (letterHasMatch && query !== '') letter.classList.add('open');
-        if (query === '') letter.classList.remove('open');
-      });
-    });
-  </script>
+        card.appendChild(categoriesWrap);
+        lettersContainer.appendChild(card);
 
+        // set expanded state
+        if(expanded[L]){
+          card.querySelector('.categories').style.display='grid';
+          arrow.innerHTML='▴';
+        } else {
+          card.querySelector('.categories').style.display='none';
+          arrow.innerHTML='▾';
+        }
+      }
+    }
+
+    function toggleLetter(L,forceOpen){
+      const card = document.getElementById('letter-'+L);
+      if(!card) return;
+      const cats = card.querySelector('.categories');
+      const arrow = card.querySelector('.toggle-arrow');
+      const isOpen = cats.style.display !== 'none' && cats.style.display !== '';
+      const shouldOpen = (typeof forceOpen === 'boolean') ? forceOpen : !isOpen;
+      cats.style.display = shouldOpen ? 'grid' : 'none';
+      arrow.innerHTML = shouldOpen ? '▴' : '▾';
+      expanded[L]=shouldOpen;saveExpanded(expanded);
+    }
+
+    function openAllCategories(L,open){
+      const card = document.getElementById('letter-'+L);
+      if(!card) return;
+      const lists = card.querySelectorAll('.explanation');
+      lists.forEach(expl=>{expl.style.display = open ? 'block' : 'none'});
+    }
+
+    // global expand/collapse
+    document.getElementById('expandAll').addEventListener('click',()=>{
+      LETTERS.forEach(L=>toggleLetter(L,true));
+    });
+    document.getElementById('collapseAll').addEventListener('click',()=>{
+      LETTERS.forEach(L=>toggleLetter(L,false));
+    });
+
+    // Export JSON (data)
+    document.getElementById('exportBtn').addEventListener('click',()=>{
+      const payload = {meta:{exportedAt: new Date().toISOString()},data:DATA};
+      const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');a.href=url;a.download='lexikon-export.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    });
+
+    // ======= Suche =======
+    function highlight(text, query){
+      if(!query) return text;
+      try{
+        const q = query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+        return text.replace(new RegExp(q,'ig'),match=>`<mark>${match}</mark>`);
+      }catch(e){return text}
+    }
+
+    function doSearch(q){
+      q = q.trim();
+      if(!q){ // reset
+        document.querySelectorAll('.letter-card').forEach(card=>{card.style.display='block';
+          // remove marks and close categories if not expanded
+          card.querySelectorAll('mark').forEach(m=>m.replaceWith(document.createTextNode(m.textContent)));
+        });
+        noResults.style.display='none';
+        return;
+      }
+
+      let foundAny = false;
+      const lower = q.toLowerCase();
+      document.querySelectorAll('.letter-card').forEach(card=>{
+        const L = card.getAttribute('data-letter');
+        let anyInLetter = false;
+        // show card always so results visible but we can hide cards with no hits
+        const categories = card.querySelectorAll('.category');
+        categories.forEach(catEl=>{
+          const catName = catEl.getAttribute('data-cat');
+          let anyInCat = false;
+          // search terms
+          const terms = catEl.querySelectorAll('.term');
+          terms.forEach(t=>{
+            const termName = t.getAttribute('data-term');
+            const expl = t.querySelector('.explanation').innerText;
+            const match = termName.toLowerCase().includes(lower) || expl.toLowerCase().includes(lower) || catName.toLowerCase().includes(lower);
+            if(match){
+              anyInCat = true;anyInLetter = true;foundAny = true;
+              // reveal term and highlight
+              t.style.display='block';
+              t.querySelector('strong').innerHTML = highlight(t.querySelector('strong').textContent, q);
+              const exEl = t.querySelector('.explanation');
+              exEl.style.display = 'block';
+              exEl.innerHTML = highlight(exEl.textContent, q);
+            } else {
+              t.style.display='none';
+            }
+          });
+          // show/hide category
+          catEl.style.display = anyInCat ? 'block' : 'none';
+        });
+        card.style.display = anyInLetter ? 'block' : 'none';
+      });
+
+      noResults.style.display = foundAny ? 'none' : 'block';
+      if(foundAny){
+        // scroll to first visible card
+        const first = document.querySelector('.letter-card[style*="display: block"]'); if(first) first.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    }
+
+    searchInput.addEventListener('input', (e)=>{
+      doSearch(e.target.value);
+    });
+    clearSearch.addEventListener('click', ()=>{searchInput.value='';doSearch('');searchInput.focus();});
+
+    // ====== Init ======
+    createAlphabet();
+    buildUI();
+
+    // Accessibility: focusable container
+    document.getElementById('content').addEventListener('keydown',(e)=>{
+      if(e.key==='/' && document.activeElement!==searchInput){ e.preventDefault(); searchInput.focus(); }
+    });
+
+    // save expanded state on page unload
+    window.addEventListener('beforeunload', ()=>{saveExpanded(expanded);});
+
+    // small enhancement: collapse/expand all categories inside a letter with double-click on head
+    document.addEventListener('dblclick', (e)=>{
+      const head = e.target.closest('.letter-head');
+      if(head){
+        const card = head.closest('.letter-card');
+        if(card){
+          const L = card.getAttribute('data-letter');
+          const anyClosed = Array.from(card.querySelectorAll('.explanation')).some(el=>el.style.display!=='block');
+          openAllCategories(L, anyClosed);
+        }
+      }
+    });
+
+  </script>
 </body>
 </html>
